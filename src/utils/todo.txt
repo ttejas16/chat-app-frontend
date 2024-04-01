@@ -1,0 +1,10 @@
+
+
+
+1. add avatar option
+2. add profile component/page
+3. add emoji selecter
+4. ability to upload images
+5. delete rooms
+6. prevent duplicate rooms
+7. 
