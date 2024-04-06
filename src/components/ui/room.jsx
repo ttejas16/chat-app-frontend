@@ -4,8 +4,10 @@ import { Separator } from "./separator";
 import { useChatContext } from "@/hooks/chatContext";
 import { cn } from "@/lib/utils";
 import { randomColor } from "@/utils/randomColor";
+import { useRoomContext } from "@/hooks/roomContext";
 
-function Room({ room, currentChat, setChat, userId }) {
+function Room({ room, currentChat, setChat, userId, updateRooms }) {
+  const roomContext = useRoomContext();
   let lastMessageFrom;
 
   if (room.isGroup && room.lastMessage) {
@@ -17,6 +19,24 @@ function Room({ room, currentChat, setChat, userId }) {
     }
   }
 
+  function cancelNotification() {
+    const rooms = roomContext.rooms;
+    const updatedRooms = rooms.map(_room => {
+      if (_room.id == room.id) {
+        return {
+          ..._room,
+          hasNotification: false,
+          notifications: []
+        }
+      }
+      return {
+        ..._room
+      }
+    })
+    console.log(updatedRooms);
+    roomContext.updateRooms({ _rooms: updatedRooms });
+  }
+
   return (
     // <div className="grid w-full">
     <>
@@ -25,6 +45,9 @@ function Room({ room, currentChat, setChat, userId }) {
         onClick={() => {
           if (currentChat.id != room.id) {
             setChat({ chat: room });
+            if (room.hasNotification) {
+              cancelNotification();
+            }
           }
         }}
       >
@@ -39,7 +62,7 @@ function Room({ room, currentChat, setChat, userId }) {
             <span className="text-xs md:text-sm font-medium text-foreground">
               {room.roomName}
             </span>
-            <span className="text-[0.65rem] md:text-xs text-muted-foreground">
+            <span className="text-[0.65rem] md:text-xs text-muted-foreground line-clamp-1">
               {room.isGroup ? lastMessageFrom : null}
               {room.lastMessage ? room.lastMessage.content : null}
             </span>
@@ -47,7 +70,7 @@ function Room({ room, currentChat, setChat, userId }) {
         </div>
         {
           room.hasNotification &&
-          <div className=" justify-self-end border bg-green-500 text-background text-[0.65rem] size-5 flex justify-center items-center rounded-full">
+          <div className=" justify-self-end shrink-0 border bg-green-500 border-none text-background text-[0.65rem] size-5 flex justify-center items-center rounded-full">
             {room.notifications.length}
           </div>
         }

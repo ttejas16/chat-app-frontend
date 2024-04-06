@@ -23,7 +23,9 @@ function ChatProvider({ children }) {
     initialMessages,
   );
 
+
   const [isChatLoading, setIsChatLoading] = useState(true);
+  const [isMoreChatLoading, setIsMoreChatLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(false);
 
   function setChat({ chat = {} }) {
@@ -44,6 +46,20 @@ function ChatProvider({ children }) {
 
   function addMessage({ message = {} }) {
     messagesDispatch({ type: "ADD_MESSAGE", payload: message });
+  }
+
+  function appendMessages({ messages = [] }) {
+    messagesDispatch({ type: "APPEND_MESSAGES", payload: messages });
+  }
+
+  async function fetchMoreMessages() {
+    setIsMoreChatLoading(true);
+    const res = await getMessages({ roomId: chat.id });
+    setTimeout(() => {
+      setIsMoreChatLoading(false);
+      appendMessages({ messages: res.messages });
+    }, 500);
+
   }
 
   async function fetchMessages() {
@@ -114,26 +130,58 @@ function ChatProvider({ children }) {
       msg.roomId == chat.id) {
       return;
     }
-    console.log(msg.roomId);
-    console.log(chat.id);
+    // console.log(msg.roomId);
+    // console.log(chat.id);
 
-    // update the rooms and set whose notification was received
-    let updatedRooms = roomContext.rooms.map((room) => {
-      if (room.id == msg.roomId) {
+    let result;
+    const notifiedRoom = roomContext.rooms.find(room => msg.roomId == room.id);
 
-        room.hasNotification = true;
-        room.notifications.push({
+    if (!notifiedRoom) {
+      // create a new room
+      // add to exisiting rooms
+      const newRoom = {
+        id: msg.roomId,
+        roomName: msg.isGroup ? msg.roomName : msg.userName,
+        isGroup: msg.isGroup,
+        lastMessage: {
           content: msg.content,
-          from: msg.userName
-        });
-
+          user: {
+            id: msg.userId,
+            userName: msg.userName
+          }
+        },
+        hasNotification: true,
+        notifications: [{ content: msg.content, from: msg.userName }]
       }
-      return room;
-    });
+      result = [...roomContext.rooms, newRoom];
+    }
+    else {
+      // room already exists
+      // update the rooms and set whose notification was received
+      result = roomContext.rooms.map((room) => {
+        if (room.id == msg.roomId) {
+          room.lastMessage = {
+            content: msg.content,
+            user: {
+              id: msg.userId,
+              userName: msg.userName
+            }
+          };
+          room.hasNotification = true;
+          room.notifications.push({
+            content: msg.content,
+            from: msg.userName
+          });
+
+        }
+        return room;
+      });
+    }
+
     // console.log(roomContext.rooms);
     // console.log(updatedRooms);
-
-    updatedRooms.sort((a, b) => {
+    // console.log(msg);
+    result.sort((a, b) => {
       if (a.hasNotification && b.hasNotification) {
         return b.notifications.length - a.notifications.length;
       }
@@ -148,7 +196,7 @@ function ChatProvider({ children }) {
       return 0;
     })
 
-    roomContext.updateRooms({ _rooms: updatedRooms });
+    roomContext.updateRooms({ _rooms: result });
   }, [authContext.user, roomContext.rooms, chat]);
 
 
@@ -187,6 +235,8 @@ function ChatProvider({ children }) {
   return (
     <ChatContext.Provider
       value={{
+        isMoreChatLoading,
+        setIsMoreChatLoading,
         isChatLoading,
         isOnline,
         chat,
@@ -195,6 +245,7 @@ function ChatProvider({ children }) {
         messages,
         setMessages,
         addMessage,
+        fetchMoreMessages
       }}
     >
       {children}

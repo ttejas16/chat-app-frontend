@@ -10,13 +10,16 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip"
 import ProfileDropdown from "./profile-dropdown";
+import { useState } from "react";
+import Profile from "./Profile";
 
 function Sidebar() {
   const themeContext = useThemeContext();
   const roomContext = useRoomContext();
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
 
- 
   return (
+
     <TooltipProvider>
       <div className="hidden sm:flex flex-col items-end gap-y-2 z-10 absolute sm:static">
         <Tooltip>
@@ -29,9 +32,7 @@ function Sidebar() {
             <p className="text-xs">Toggle Theme</p>
           </TooltipContent>
         </Tooltip>
-        <Tooltip>
-          <ProfileDropdown />
-        </Tooltip>
+        <ProfileDropdown />
         <Button size={"icon"} title="Filter groups" onClick={() => {
           roomContext.toggleFilter()
         }}>

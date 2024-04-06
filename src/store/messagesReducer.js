@@ -9,7 +9,7 @@ function messagesReducer(state, action) {
                 ...state,
                 ...action.payload
             ]
-        
+
         // clear all messages
         case 'RESET_MESSAGES':
             return [
@@ -21,6 +21,12 @@ function messagesReducer(state, action) {
             return [
                 ...state,
                 { ...action.payload }
+            ]
+
+        case 'APPEND_MESSAGES':
+            return [
+                ...action.payload,
+                ...state,
             ]
 
         default:

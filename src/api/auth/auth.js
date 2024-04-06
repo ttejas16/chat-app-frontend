@@ -17,11 +17,11 @@ async function login({ email, password }) {
     }
 }
 
-async function logout(){
+async function logout() {
 
     try {
         const { data } = await instance.post("/auth/logout");
-        
+
         return data;
 
     } catch (err) {
@@ -44,7 +44,7 @@ async function signup({ email, password, userName }) {
     }
 }
 
-async function getUser(){
+async function getUser() {
     try {
         const { data } = await instance.post("/auth/getUser");
         return data;
@@ -55,4 +55,15 @@ async function getUser(){
     }
 }
 
-export { login, logout, signup, getUser };
+async function getProfile() {
+    try {
+        const { data } = await instance.post("/auth/profile");
+        return data;
+
+    } catch (err) {
+        console.log(err);
+        return err.response?.data;
+    }
+}
+
+export { login, logout, signup, getUser, getProfile };

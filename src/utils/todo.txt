@@ -3,8 +3,8 @@
 
 1. add avatar option
 2. add profile component/page
-3. add emoji selecter
+3. add emoji selecter - DONE
 4. ability to upload images
-5. delete rooms
-6. prevent duplicate rooms
+5. delete rooms - will require good amount of work
+6. prevent duplicate rooms - will require maybe a schema change
 7. 

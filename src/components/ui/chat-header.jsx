@@ -1,7 +1,7 @@
 import { useChatContext } from "@/hooks/chatContext";
 import { Avatar, AvatarImage, AvatarFallback } from "./avatar";
 import { Button } from "./button";
-import { ArrowLeftIcon, Circle, Dot, MoreVertical, Search } from "lucide-react";
+import { ArrowLeftIcon, Circle, Dot, MoreVertical, Search, X } from "lucide-react";
 
 function ChatHeader({ chat, isOnline, setIsVisible }) {
     const chatContext = useChatContext();
@@ -35,16 +35,16 @@ function ChatHeader({ chat, isOnline, setIsVisible }) {
             <div className="flex items-center lg:space-x-2 ">
 
                 <Button variant={"ghost"} size={"xs"} className="text-foreground hover:bg-inherit cursor-default">
-                    <Circle className="size-[6px] lg:size-[8px]" 
-                            color={isOnline ? "lightGreen" : "none"} 
-                            fill={isOnline ? "lightGreen": "none"}
+                    <Circle className="size-[6px] lg:size-[8px]"
+                        color={isOnline ? "lightGreen" : "none"}
+                        fill={isOnline ? "lightGreen" : "none"}
                     />
                 </Button>
                 <Button variant={"ghost"} size={"sm"} className="text-foreground">
                     <Search className="size-[15px] lg:size-[18px]" />
                 </Button>
-                <Button variant={"ghost"} size={"sm"} className="text-foreground">
-                    <MoreVertical className="size-[15px] lg:size-[18px]" />
+                <Button onClick={() => chatContext.resetChat()} variant={"ghost"} size={"sm"} className="text-foreground">
+                    <X className="size-[15px] lg:size-[18px]" />
                 </Button>
 
             </div>
