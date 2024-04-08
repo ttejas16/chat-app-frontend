@@ -9,34 +9,92 @@ import Spinner from "./ui/spinner";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { updateProfile } from "@/api/user/user";
 
 function Profile({ children, profileLoading, profile, }) {
   const { toast } = useToast();
   const authContext = useAuthContext();
-  const [isEditing, setIsEditing] = useState(false);
-
-  const createdAt = new Date(profile.createdAt);
-  const idx = createdAt.toDateString().indexOf(" ");
-  const createdDateString = createdAt.toDateString().slice(idx + 1);
-
-  const updatedAt = new Date(profile.updatedAt);
-  const spaceIndex = updatedAt.toDateString().indexOf(" ");
-  const updatedDateString = updatedAt.toDateString().slice(spaceIndex + 1);
+  const avatarRef = useRef(null);
+  const [editingField, setEditingField] = useState("");
+  const [profileData, setProfileData] = useState({ ...profile });
+  const [file, setFile] = useState(null);
+  const [submitDisabled, setSubmitDisabled] = useState(true);
 
   const detailRef = useRef();
 
   useEffect(() => {
-    if (!detailRef) {
+    detailRef.current = {
+      userName: profile.userName,
+      status: profile.status,
+    };
 
+  }, [profile]);
+
+  useEffect(() => {
+    if (!profileData.userName.trim() || !profileData.status.trim()) {
+      setSubmitDisabled(true);
+      return;
     }
-  }, []);
+
+    if (profileData.userName.trim() != detailRef.current.userName ||
+      profileData.status.trim() != detailRef.current.status) {
+      setSubmitDisabled(false);
+      return;
+    }
+
+    setSubmitDisabled(true);
+
+  }, [profileData]);
+
+  function loadFile(e) {
+    const file = e.currentTarget.files[0];
+    const fileSize = ((file.size / 1024) / 1024).toFixed(4);
+
+    if (fileSize > 5) {
+      toast({
+        title: "Image size should be less than 5MB!",
+        variant: "warning"
+      })
+      return;
+    }
+
+    console.log(avatarRef.current);
+    setFile(file);
+  }
+
+  // useEffect(() => {
+  //   if (!file) {
+  //     return;
+  //   }
+  //   const fileReader = new FileReader();
+  //   fileReader.readAsDataURL(file);
+  //   fileReader.onloadend = () => {
+  //     console.log(avatarRef.current);
+  //     if (avatarRef.current) {
+  //       avatarRef.current.src = fileReader.result;
+  //     }
+  //   }
+  //   return () => {
+  //     fileReader.removeEventListener('onloadend');
+  //   }
+  // }, [file]);
+
+  async function handleSubmit() {
+    const res = await updateProfile({
+      file: file,
+      userName: profileData.userName,
+      status: profileData.status
+    });
+
+    console.log(res);
+  }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent onOpenAutoFocus={() => { }} className="bg-secondary text-foreground">
+      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()} className="bg-secondary text-foreground">
         <DialogHeader>
           <DialogTitle>
             Profile
@@ -52,22 +110,31 @@ function Profile({ children, profileLoading, profile, }) {
           <>
             <div className="flex space-x-8 justify-center">
               <Avatar className="size-32 relative overflow-visible">
-                <AvatarImage src="https://picsum.photos/seed/picsum/200/300" className="rounded-full" />
+                <AvatarImage
+                  ref={avatarRef}
+                  src={file ?? "https://picsum.photos/seed/picsum/200/200"}
+                  className="rounded-full object-cover" />
                 <AvatarFallback className="border border-muted-foreground/70">
                   TS
                 </AvatarFallback>
-                <Input id="profileImage" name="profileImage" type="file" accept="image" className="hidden" />
-                <Label htmlFor="profileImage" className="rounded-full bg-muted/90 absolute -bottom-2 right-0 border p-2">
+                <Input
+                  form="updateForm"
+                  onChange={loadFile}
+                  id="profileImage"
+                  name="profileImage"
+                  type="file"
+                  accept="image/png image/jpeg"
+                  className="hidden" />
+                <Label htmlFor="profileImage" className="rounded-full bg-muted/90 absolute -bottom-2 right-0 border border-muted-foreground/30 p-2">
                   <Camera className="size-5" strokeWidth={1.5} />
                 </Label>
               </Avatar>
             </div>
-            <form className="flex flex-col gap-y-2 text-foreground">
+            <form id="updateForm" className="flex flex-col gap-y-2 text-foreground">
               <Label className="text-xs">Email</Label>
               <div className="flex gap-1">
-                {/* <input type="text"readOnly /> */}
                 <Input
-                  value={profile.email}
+                  value={profileData.email}
                   className="col-span-2 bg-muted-foreground/10 focus-visible:ring-0 focus-visible:ring-offset-0"
                   type="email"
                   disabled
@@ -76,13 +143,20 @@ function Profile({ children, profileLoading, profile, }) {
               <Label className="text-xs">Username</Label>
               <div className="flex gap-1">
                 <Input
-                  value={profile.userName}
-                  onChange={() => { }}
-                  disabled={!isEditing ? true : false}
+                  value={profileData.userName}
+                  onChange={(e) => {
+                    setProfileData((prev) => {
+                      return {
+                        ...prev,
+                        userName: e.currentTarget.value
+                      }
+                    })
+                  }}
+                  disabled={editingField == "userName" ? false : true}
                   className="col-span-2 bg-muted-foreground/10 focus-visible:ring-0 focus-visible:ring-offset-0" />
                 <Button onClick={(e) => {
                   e.preventDefault();
-                  setIsEditing(true);
+                  setEditingField("userName");
 
                 }} variant="ghost" size="icon">
                   <Pencil strokeWidth={1.5} className="size-4" />
@@ -91,13 +165,20 @@ function Profile({ children, profileLoading, profile, }) {
               <Label className="text-xs">Status</Label>
               <div className="flex gap-1">
                 <Input
-                  value={profile.status ?? "No Status"}
-                  onChange={() => { }}
-                  disabled={!isEditing ? true : false}
+                  value={profileData.status ?? ""}
+                  onChange={(e) => {
+                    setProfileData((prev) => {
+                      return {
+                        ...prev,
+                        status: e.currentTarget.value
+                      }
+                    })
+                  }}
+                  disabled={editingField == "status" ? false : true}
                   className="col-span-2 bg-muted-foreground/10 focus-visible:ring-0 focus-visible:ring-offset-0" />
                 <Button onClick={(e) => {
                   e.preventDefault();
-                  setIsEditing(true);
+                  setEditingField("status");
 
                 }} variant="ghost" size="icon">
                   <Pencil strokeWidth={1.5} className="size-4" />
@@ -106,10 +187,14 @@ function Profile({ children, profileLoading, profile, }) {
             </form>
             <DialogFooter className="sm:justify-between mt-4">
               <div className="flex flex-col justify-center mt-2">
-                <h3 className="text-xs font-semibold text-muted-foreground">Joined At {createdDateString}</h3>
-                <h3 className="text-xs font-semibold text-muted-foreground">Last Updated At {updatedDateString}</h3>
+                <h3 className="text-xs font-semibold text-muted-foreground">
+                  Joined At {new Date(profileData.createdAt).toDateString().slice(4)}
+                </h3>
+                <h3 className="text-xs font-semibold text-muted-foreground">
+                  Last Updated At {new Date(profileData.updatedAt).toDateString().slice(4)}
+                </h3>
               </div>
-              <Button disabled={!isEditing} >
+              <Button onClick={handleSubmit} disabled={submitDisabled}>
                 Update Profile
               </Button>
             </DialogFooter>
