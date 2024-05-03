@@ -10,7 +10,6 @@ const emojis = [
   { emojiName: 'camel', emoji: '🐪️' },
   { emojiName: 'porcupine', emoji: '🦔️' },
   { emojiName: 'turtle', emoji: '🐢️' },
-  // { emojiName: 'deer', emoji: '🦌️' },
   { emojiName: 'flamingo', emoji: '🦩️' },
 ]
 function CustomEmojiPicker({ onEmojiClick }) {

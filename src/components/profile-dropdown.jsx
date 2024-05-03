@@ -1,24 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import React from "react";
+import { LogOut, User } from "lucide-react";
+
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "./ui/tooltip"
-import { Button } from "./ui/button";
-import { UserCircleIcon, User, LogOut } from "lucide-react";
-import { getProfile, logout } from "@/api/auth/auth";
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from "./ui/dropdown-menu";
 import { useToast } from "./ui/use-toast";
-import { useAuthContext } from "@/hooks/authContext";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Profile from "./Profile";
+
+import { useAuthContext } from "@/hooks/authContext";
+import { logout } from "@/api/auth/auth";
 
 function ProfileDropdown() {
     const { toast } = useToast();
     const authContext = useAuthContext();
-    const [profileLoading, setProfileLoading] = useState(true);
-    const [profile, setProfile] = useState({});
-
 
     async function handleLogout() {
         authContext.setIsLoading(true);
@@ -50,51 +49,21 @@ function ProfileDropdown() {
         }, 500);
     }
 
-    async function fetchProfile() {
-        const res = await getProfile();
-        if (!res) {
-            toast({
-                title: "Internal Server Error!",
-                variant: "destructive"
-            });
-            return;
-        }
-
-        if (!res.success) {
-            toast({
-                title: res.msg,
-                variant: "destructive"
-            });
-            return;
-        }
-
-        setProfile({
-            ...res.profile
-        });
-        setTimeout(() => {
-            setProfileLoading(false);
-        }, 2000);
-    }
-
-    useEffect(() => {
-        fetchProfile();
-
-        return () => {
-            setProfile({});
-            setProfileLoading(true);
-        }
-    }, []);
-
     return (
 
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button size={"icon"}>
-                    <UserCircleIcon size={18} />
-                </Button>
+                <Avatar className="cursor-pointer w-11 h-11 relative overflow-visible text-foreground">
+                    <AvatarImage src={authContext.user.profile.avatar} className="rounded-full" />
+                    <AvatarFallback>
+                        {authContext.user.profile.userName?.split(" ").slice(0, 2).map((v) => v[0]).join("")}
+                    </AvatarFallback>
+                    <div className="w-3 h-3 bg-green-500 rounded-full absolute z-10 bottom-0 -right-1"></div>
+                </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="hidden sm:block" align={"start"}>
-                <Profile profile={profile} profileLoading={profileLoading}>
+
+                <Profile profile={authContext.user.profile}>
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                         <div className="flex space-x-2 text-xs w-full h-full">
                             <User size={16} className="text-primary" />
@@ -104,8 +73,8 @@ function ProfileDropdown() {
                 </Profile>
 
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    <div className="flex space-x-2 text-xs" onClick={handleLogout}>
+                <DropdownMenuItem onClick={handleLogout}>
+                    <div className="flex space-x-2 text-xs" >
                         <LogOut size={16} className="text-primary" />
                         <span>Log out</span>
                     </div>

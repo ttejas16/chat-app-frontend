@@ -1,12 +1,12 @@
-import { useEffect, useReducer, useState } from "react"
+import { useEffect, useReducer, useRef, useState } from "react"
 
 import { AuthContext } from "@/hooks/authContext";
-import { getUser, logout } from "@/api/auth/auth";
+import { getUser } from "@/api/auth/auth";
 
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button"
 
 import { initialUserState, userReducer } from "@/store/userReducer";
+import axios from "axios";
 
 function AuthProvider({ children }) {
   const { toast } = useToast();
@@ -21,6 +21,10 @@ function AuthProvider({ children }) {
     userDispatch({ type: "LOG_OUT" });
   }
 
+  function updateProfile({ updatedProfile = {} }) {
+    userDispatch({ type: "UPDATE_PROFILE", payload: updatedProfile });
+  }
+
   async function fetchOnLoad() {
     const res = await getUser();
 
@@ -33,19 +37,30 @@ function AuthProvider({ children }) {
       return;
     }
 
-    if (res.success) {
-      // console.log(res);
-
-      loginUser(res.user);
+    if (!res.success) {
       setTimeout(() => {
         setIsLoading(false);
       }, 500);
+      return;
     }
+
+    loginUser(res.user);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+
   }
 
+  const ref = useRef();
   useEffect(() => {
     // fetch user on initial load
-    fetchOnLoad();
+    if (!ref.current) {
+      fetchOnLoad();
+    }
+
+    return () => {
+      ref.current = true;
+    }
   }, []);
 
   return (
@@ -54,29 +69,11 @@ function AuthProvider({ children }) {
         user,
         loginUser,
         logoutUser,
+        updateProfile,
         isLoading,
         setIsLoading
       }}
     >
-      {/* <Button
-        className="absolute left-24 top-1"
-        onClick={async () => {
-          setIsLoading(true);
-          const res = await logout();
-          if (!res) {
-            console.log("internal server error");
-            return;
-          }
-
-          setTimeout(() => {
-            setIsLoading(false);
-          }, 1000);
-          logoutUser();
-          console.log(res.msg);
-        }}
-      >
-        Logout
-      </Button> */}
       {children}
     </AuthContext.Provider>
   );

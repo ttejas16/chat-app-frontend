@@ -1,13 +1,13 @@
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useToast } from "../ui/use-toast";
+import Spinner from "../ui/spinner";
 
 import { validate } from "@/api/auth/validate";
 import { signup } from "@/api/auth/auth";
-import Spinner from "../ui/spinner";
-import { Eye, EyeOff } from "lucide-react";
 
 const initialState = {
   userName: "",

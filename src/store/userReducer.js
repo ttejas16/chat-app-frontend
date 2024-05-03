@@ -5,19 +5,26 @@ const initialUserState = {
 
 
 function userReducer(state, action) {
-    const user = action.payload;
 
     switch (action.type) {
         case 'LOG_IN':
             return {
-                isAuthenticated: user.isAuthenticated,
-                profile:{
-                    ...user.profile
+                isAuthenticated: true,
+                profile: {
+                    ...action.payload
                 }
             }
-            
+
         case 'LOG_OUT':
             return initialUserState
+
+        case 'UPDATE_PROFILE':
+            return {
+                isAuthenticated: state.isAuthenticated,
+                profile: {
+                    ...action.payload,
+                }
+            }
 
         default:
             console.log("invalid action");
@@ -25,4 +32,4 @@ function userReducer(state, action) {
     }
 }
 
-export { initialUserState,userReducer };
+export { initialUserState, userReducer };

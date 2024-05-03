@@ -1,9 +1,4 @@
-import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
-import { Separator } from "./separator";
-import { useChatContext } from "@/hooks/chatContext";
-import { cn } from "@/lib/utils";
-import { randomColor } from "@/utils/randomColor";
 import { useRoomContext } from "@/hooks/roomContext";
 
 function Room({ room, currentChat, setChat, userId, updateRooms }) {
@@ -33,15 +28,15 @@ function Room({ room, currentChat, setChat, userId, updateRooms }) {
         ..._room
       }
     })
-    console.log(updatedRooms);
+
     roomContext.updateRooms({ _rooms: updatedRooms });
   }
 
   return (
-    // <div className="grid w-full">
     <>
       <div
-        className="flex items-center bg-background border border-border dark:border-background rounded-md shadow-sm justify-between space-x-4 py-3 px-4 cursor-pointer hover:bg-accent w-full"
+        className="flex items-center bg-secondary border border-border dark:border-background rounded-md 
+        shadow-sm justify-between space-x-4 py-3 px-4 cursor-pointer hover:bg-secondary/70 transition-all w-full"
         onClick={() => {
           if (currentChat.id != room.id) {
             setChat({ chat: room });
@@ -52,11 +47,17 @@ function Room({ room, currentChat, setChat, userId, updateRooms }) {
         }}
       >
         <div className="flex space-x-4 items-center">
-          <Avatar className="size-8 lg:size-10">
-            <AvatarImage />
-            <AvatarFallback className="bg-muted text-muted-foreground text-xs md:text-sm">
+          <Avatar className="size-8 lg:size-10 relative overflow-visible">
+            <AvatarImage src={room.avatar} className="rounded-full" />
+            <AvatarFallback className="bg-background/50 text-muted-foreground text-xs md:text-sm">
               {room.roomName?.split(" ").slice(0, 2).map((v) => v[0]).join("")}
             </AvatarFallback>
+            {
+              !room.isGroup && (
+                room.isOnline ?
+                  <div className="w-3 h-3 bg-green-500 rounded-full absolute z-10 bottom-0 -right-1"></div> :
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full absolute z-10 bottom-0 -right-1"></div>)
+            }
           </Avatar>
           <div className="flex flex-col">
             <span className="text-xs md:text-sm font-medium text-foreground">
@@ -75,9 +76,7 @@ function Room({ room, currentChat, setChat, userId, updateRooms }) {
           </div>
         }
       </div>
-      {/* <Separator className="w-full self-center bg-muted-foreground/30" /> */}
     </>
-    // </div>
   );
 }
 

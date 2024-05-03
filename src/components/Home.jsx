@@ -1,9 +1,9 @@
+import { useEffect, useState } from "react";
 import Sidebar from "@/components/SideBar"
 import RoomList from "@/components/RoomList"
 import ChatBox from "@/components/ChatBox"
 import EmptyChat from "./ui/empty-chat";
 import { useChatContext } from "@/hooks/chatContext";
-import { useEffect, useState } from "react";
 
 const mediumDeviceWidth = 768;
 
@@ -29,9 +29,9 @@ function Home() {
             <Sidebar />
             <RoomList />
 
-            { chatContext.chat.id == -1 && !isMobile && <EmptyChat/>}
-            { chatContext.chat.id != -1 && <ChatBox />}
-            
+            {chatContext.chat.id == -1 && !isMobile && <EmptyChat />}
+            {chatContext.chat.id != -1 && <ChatBox />}
+
 
         </div>
     )

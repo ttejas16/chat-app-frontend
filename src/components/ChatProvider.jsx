@@ -1,13 +1,14 @@
 import { useState, useEffect, useReducer, useCallback } from "react";
 
-import { ChatContext } from "@/hooks/chatContext";
 
 import { initialChat, chatReducer } from "@/store/chatReducer";
 import { initialMessages, messagesReducer } from "@/store/messagesReducer";
 
+import { useToast } from "./ui/use-toast";
+
 import { socket } from "@/api/socketConfig";
 import { getMessages } from "@/api/chat/message";
-import { useToast } from "./ui/use-toast";
+import { ChatContext } from "@/hooks/chatContext";
 import { useAuthContext } from "@/hooks/authContext";
 import { useRoomContext } from "@/hooks/roomContext";
 
@@ -97,20 +98,8 @@ function ChatProvider({ children }) {
 
     socket.emit('join-room', chat.id);
     socket.on("message", (msg) => {
-      console.log("message received");
       addMessage({ message: msg });
     });
-
-    // if (!chat.isGroup) {
-    //   socket.on("online", (msg) => {
-    //     setIsOnline(msg.isOnline);
-    //   });
-    //   socket.emit("online", { isOnline: true }, (isOnline) => {
-    //     if (isOnline) {
-    //       setIsOnline(true);
-    //     }
-    //   });
-    // }
 
     return () => {
       resetMessages({ messages: [] });
@@ -130,8 +119,6 @@ function ChatProvider({ children }) {
       msg.roomId == chat.id) {
       return;
     }
-    // console.log(msg.roomId);
-    // console.log(chat.id);
 
     let result;
     const notifiedRoom = roomContext.rooms.find(room => msg.roomId == room.id);
@@ -178,9 +165,6 @@ function ChatProvider({ children }) {
       });
     }
 
-    // console.log(roomContext.rooms);
-    // console.log(updatedRooms);
-    // console.log(msg);
     result.sort((a, b) => {
       if (a.hasNotification && b.hasNotification) {
         return b.notifications.length - a.notifications.length;
@@ -201,7 +185,6 @@ function ChatProvider({ children }) {
 
 
   useEffect(() => {
-    // console.log("ran");
     if (!authContext.user.isAuthenticated) {
       return;
     }

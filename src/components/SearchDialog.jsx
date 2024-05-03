@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { ScrollArea, ScrollBar } from "./ui/scroll-area";
+import { ScrollArea } from "./ui/scroll-area";
 import { useToast } from "./ui/use-toast";
 import { Separator } from "./ui/separator";
 
@@ -22,18 +22,19 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 
-import { Plus, Snail } from "lucide-react";
+import { Snail } from "lucide-react";
 import { addRoom, searchUsers } from "@/api/chat/room";
 import { useAuthContext } from "@/hooks/authContext";
 import { useRoomContext } from "@/hooks/roomContext";
+import { useDialogContext } from "@/hooks/dialogContext";
 
 function SearchDialog({ children }) {
   const authContext = useAuthContext();
   const roomContext = useRoomContext();
+  const dialogContext = useDialogContext();
 
   const { toast } = useToast();
 
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   // roomtype = 'group' | 'single'
@@ -50,6 +51,7 @@ function SearchDialog({ children }) {
   useEffect(() => {
     const timeoutId = setTimeout(async () => {
       setResultMessage(null);
+
       if (email) {
         setIsLoading(true);
         const res = await searchUsers({ email: email });
@@ -62,9 +64,11 @@ function SearchDialog({ children }) {
           });
           return;
         }
+
         if (res.users.length == 0) {
           setResultMessage("No Users Found");
         }
+
         setResultSet([...res.users]);
       }
     }, 2000);
@@ -122,12 +126,12 @@ function SearchDialog({ children }) {
     })
 
     roomContext.appendRoom({ room: res.room });
-    setDialogOpen(false);
+    dialogContext.setIsOpen(false);
   }
 
   return (
     <Dialog
-      open={dialogOpen}
+      open={dialogContext.isOpen}
       onOpenChange={(open) => {
         setEmail("");
         setRoomName("");
@@ -136,7 +140,7 @@ function SearchDialog({ children }) {
         setRoomType(null);
         setSelectedUsers([]);
         setReference.current.clear();
-        setDialogOpen(open);
+        dialogContext.setIsOpen(open);
       }}
     >
       <DialogTrigger asChild>
@@ -226,7 +230,7 @@ function SearchDialog({ children }) {
                         setSelectedUsers={setSelectedUsers}
                         set={setReference.current}
                       />
-                      <Separator className="bg-muted-foreground" />
+                      <Separator className="bg-muted-foreground my-1" />
                     </div>
                   );
                 })}
@@ -240,7 +244,7 @@ function SearchDialog({ children }) {
                         setResultSet={setResultSet}
                         isUserSame={user.id == authContext.user.profile.id}
                       />
-                      <Separator className="bg-muted-foreground" />
+                      <Separator className="bg-muted-foreground mt-1" />
                     </div>
                   );
                 })}
@@ -252,20 +256,6 @@ function SearchDialog({ children }) {
                   </div>
                 ) : null}
               </ScrollArea>
-              {/* <ScrollArea className="w-full whitespace-nowrap">
-                <div className="flex w-max space-x-1 pb-3">
-                  {
-                    selectedusers.map((user,index) => {
-                      return (
-                        <div key={index} className="w-max rounded-sm bg-primary px-2 py-1 text-xs text-primary-foreground">
-                          <span>{user.firstName + " " + user.lastName}</span>
-                        </div>
-                      )
-                    })
-                  }
-                </div>
-                <ScrollBar orientation="horizontal" className="" />
-              </ScrollArea> */}
               <DialogFooter>
                 <Button onClick={addUser} disabled={selectedusers.length == 0}>
                   {selectedusers.length > 1 ? "Add Users" : "Add User"}

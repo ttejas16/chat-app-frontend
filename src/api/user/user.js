@@ -1,16 +1,15 @@
 import axios from "axios";
 import instance from "../axiosConfig";
 
-async function updateProfile({ file, userName, status }) {
-  // console.log(file);
+async function updateProfile({ avatar, userName, status }) {
+
   const formData = new FormData();
-  formData.append("avatar", file);
-  // formData.append("userName", userName);
-  // formData.append("status", status);
-  // console.log(formData);
+  formData.append("avatar", avatar);
+  formData.append("userName", userName);
+  formData.append("status", status);
 
   try {
-    const { data } = await instance.post("/auth/updateProfile", formData,
+    const { data } = await instance.put("/auth/updateProfile", formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",

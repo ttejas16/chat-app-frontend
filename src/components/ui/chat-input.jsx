@@ -1,14 +1,13 @@
 import { useState } from "react";
+import { Send } from "lucide-react";
+
 import { Button } from "./button";
-import { Plus, Send, SmilePlus, Squirrel } from "lucide-react";
 import { Input } from "./input";
+import CustomEmojiPicker from "./emoji-picker";
 
 import { socket } from "@/api/socketConfig";
 import { useAuthContext } from "@/hooks/authContext";
-import { Textarea } from "./textarea";
 import { useChatContext } from "@/hooks/chatContext";
-import EmojiPicker from "emoji-picker-react";
-import CustomEmojiPicker from "./emoji-picker";
 
 function ChatInput() {
 
@@ -45,7 +44,7 @@ function ChatInput() {
       <form onSubmit={handleSubmit} className="w-full flex gap-x-1 sm:gap-x-3">
         <Input
           placeholder="Enter a message"
-          className="bg-background text-foreground text-sm py-5 shadow-sm rounded-md focus-visible:ring-offset-0 focus-visible:ring-0"
+          className="bg-secondary text-foreground text-sm py-5 shadow-sm rounded-md focus-visible:ring-offset-0 focus-visible:ring-0"
           value={inputMessage}
           onChange={(e) => {
             setInputMessage(e.target.value);

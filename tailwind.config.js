@@ -66,13 +66,13 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "slide-in":{
-          from: { top:"100%"},
-          to: { top:"0%" },
+        "slide-in": {
+          from: { top: "100%" },
+          to: { top: "0%" },
         },
-        "slide-out":{
-          from: { top:"0%"},
-          to: { top:"100%" },
+        "slide-out": {
+          from: { top: "0%" },
+          to: { top: "100%" },
         },
       },
       animation: {

@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 
-import Layout from "./Layout"
+import Home from "@/components/Home"
 import Error from "@/components/Error"
 import PrivateWrapper from "@/components/PrivateWrapper"
 import AuthForm from "@/components/auth/AuthForm"
-import Home from "./components/Home"
+import Layout from "./Layout"
 
 function App() {
     return (

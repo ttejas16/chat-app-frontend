@@ -13,12 +13,12 @@ function SelectedUser({ user, setSelectedUsers, set }) {
                 })
                 set.delete(user.id);
             }}
-            className="flex items-center justify-between p-2 rounded-sm cursor-pointer bg-primary text-primary-foreground"
+            className="flex items-center justify-between py-2 px-3 rounded-sm cursor-pointer bg-primary text-primary-foreground"
         >
-            <div className="text-xs sm:text-sm">
+            <div className="text-xs font-semibold line-clamp-1">
                 {user.userName}
             </div>
-            <X className="size-4 sm:size-5"/>
+            <X className="size-4 sm:size-5" />
         </div>
     )
 }

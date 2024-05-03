@@ -14,6 +14,7 @@ function ChatMessages({ chat, isChatLoading, messages }) {
   const [scrollPosition, setScrollPosition] = useState(0);
 
   const topRef = useRef(null);
+  const bottomRef = useRef(null);
 
   const handler = useCallback((div) => {
     if (!div) {
@@ -24,34 +25,24 @@ function ChatMessages({ chat, isChatLoading, messages }) {
 
   }, [chatContext.chat]);
 
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(async ([entry]) => {
-  //     if (entry.isIntersecting) {
-  //       console.log(window.scrollY);
-  //       setScrollPosition(window.scrollY);
-  //       await chatContext.fetchMoreMessages();
-  //       window.scrollY = scrollPosition;
+  useEffect(() => {
+    if (!bottomRef.current || messages.length == 0) {
+      return;
+    }
 
-  //     }
-  //   });
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage.userId == authContext.user.profile.id) {
+      bottomRef.current.scrollIntoView();
+    }
 
-  //   if (topRef.current) {
-  //     observer.observe(topRef.current);
-  //   }
-
-  //   return () => {
-  //     if (topRef.current) {
-  //       observer.unobserve(topRef.current);
-  //     }
-  //   }
-  // }, [chatContext.isChatLoading, topRef]);
+  }, [messages]);
 
   return (
-    <div className="relative overflow-y-auto flex flex-col bg-background border border-border shadow-sm rounded-md">
+    <div className="relative overflow-y-auto flex flex-col bg-secondary border border-border shadow-sm rounded-md">
       <img
         src="/src/assets/tten.svg"
         alt="pattern"
-        className="absolute left-0 top-0 h-full w-full object-cover opacity-[0.5]"
+        className="absolute text-purple-500 left-0 top-0 h-full w-full object-cover opacity-[0.5]"
       />
       {isChatLoading ? (
         <div className="self-center my-auto">
@@ -60,7 +51,6 @@ function ChatMessages({ chat, isChatLoading, messages }) {
       ) : (
         <>
           <ScrollArea className="w-full h-full">
-            {/* <div ref={topRef}></div> */}
             <div className="w-full h-full flex flex-col items-start py-4 gap-y-2 px-3 sm:px-6">
               {!isChatLoading && messages.length == 0 &&
                 <div className="flex flex-col items-center self-center relative 
@@ -81,7 +71,7 @@ function ChatMessages({ chat, isChatLoading, messages }) {
                 )
               })}
             </div>
-            <div ref={handler}></div>
+            <div ref={bottomRef}></div>
           </ScrollArea>
         </>
       )}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +9,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { validate } from "@/api/auth/validate";
 import { login } from "@/api/auth/auth";
 import Spinner from "../ui/spinner";
+
 import { useAuthContext } from "@/hooks/authContext";
-import { Eye, EyeOff } from "lucide-react";
 
 function Login({ loading, setLoading, toggleForm }) {
   const authContext = useAuthContext();
@@ -70,7 +71,7 @@ function Login({ loading, setLoading, toggleForm }) {
         <span className="text-3xl font-bold tracking-tight md:text-4xl text-center">Welcome Back !</span>
         <span className="text-xs sm:text-sm md:text-base text-muted-foreground font-medium text-center">Sign In To Your Account Using Credentials</span>
       </div>
-      
+
       <Input
         type="email"
         name="email"
@@ -121,11 +122,11 @@ function Login({ loading, setLoading, toggleForm }) {
           <span className="w-full border-b border-foreground"></span>
         </div>
         <div className="relative flex justify-center">
-          <span className="bg-background px-2 text-xs sm:text-sm">OR CREATE ACCOUNT</span>
+          <span className="bg-secondary px-2 text-xs sm:text-sm">OR CREATE ACCOUNT</span>
         </div>
 
       </div>
-      <Button size={"lg"} variant={"outline"} className="w-full py-6 text-sm sm:text-base"
+      <Button size={"lg"} variant={"outline"} className="w-full py-6 text-sm sm:text-base bg-inherit border-muted-foreground/20 hover:bg-background/30"
         onClick={(e) => {
           e.preventDefault();
           toggleForm("signup")
@@ -133,15 +134,6 @@ function Login({ loading, setLoading, toggleForm }) {
       >
         REGISTER
       </Button>
-      {/* <span className="text-lg">
-        Don't Have An Account ?{" "}
-        <span
-          onClick={() => toggleForm("signup")}
-          className=" cursor-pointer underline decoration-primary underline-offset-2"
-        >
-          Sign Up
-        </span>
-      </span> */}
       <Spinner loading={loading} />
     </form>
   );

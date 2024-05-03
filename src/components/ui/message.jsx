@@ -6,7 +6,7 @@ function Message({ fromCurrentUser, message, userName }, ref) {
       <div ref={ref} className="flex flex-col">
         <div
           className="relative max-w-[50vw] md:max-w-[25vw] flex flex-col self-start rounded-md 
-            rounded-tl-none bg-secondary px-3 py-2 text-foreground"
+            rounded-tl-none bg-background/70 px-3 py-2 text-foreground"
         >
           <span className="text-xs font-semibold text-rose-600 dark:text-rose-400">
             {userName}
@@ -18,9 +18,9 @@ function Message({ fromCurrentUser, message, userName }, ref) {
                     border-l-8 
                     border-t-8 
                     border-solid 
-                    border-secondary 
+                    border-background/70 
                     border-x-transparent
-                    border-t-secondary"
+                    border-t-background/70"
           ></div>
         </div>
       </div>

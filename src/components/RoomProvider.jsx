@@ -6,11 +6,13 @@ import { useAuthContext } from "@/hooks/authContext";
 import { initialRooms, roomReducer } from "@/store/roomReducer";
 
 import { getRooms } from "@/api/chat/room";
+import { socket } from "@/api/socketConfig";
 import { useToast } from "./ui/use-toast";
 
 function RoomProvider({ children }) {
     const { toast } = useToast();
     const authContext = useAuthContext();
+
     const [rooms, roomsDispatch] = useReducer(roomReducer, initialRooms);
     const [isRoomsLoading, setIsRoomsLoading] = useState(true);
     const [filterGroups, setFilterGroups] = useState(false);
@@ -34,8 +36,7 @@ function RoomProvider({ children }) {
     }
 
     function appendRoom({ room = {} }) {
-        console.log(room);
-        
+
         if (Object.keys(room).length > 0) {
             room.hasNotification = false;
             room.notifications = [];
@@ -61,7 +62,6 @@ function RoomProvider({ children }) {
         }
 
         if (!res.success) {
-            console.log(res);
             toast({
                 variant: "destructive",
                 title: res.msg
@@ -69,7 +69,29 @@ function RoomProvider({ children }) {
             return;
         }
 
+
         setRooms({ rooms: res.rooms });
+        socket.emit('online', res.rooms.filter(room => !room.isGroup).map(room => {
+            return {
+                roomId: room.id,
+                targetUserId: room.targetUserId
+            }
+        }), (onlineUsers) => {
+            const updatedRooms = res.rooms.map(room => {
+                if (onlineUsers[room.id]) {
+                    return {
+                        ...room,
+                        isOnline: true
+                    }
+                }
+                return {
+                    ...room,
+                    isOnline: false
+                }
+            });
+            updateRooms({ _rooms: updatedRooms });
+        });
+
         setIsRoomsLoading(false);
     }
 
@@ -78,7 +100,7 @@ function RoomProvider({ children }) {
             return;
         }
         // fetch rooms of user on initial load
-        const timeoutId = setTimeout(() => {
+        const timeoutId = setTimeout(async () => {
             getInitialRooms();
         }, 1500);
 
@@ -88,6 +110,51 @@ function RoomProvider({ children }) {
             clearTimeout(timeoutId);
         }
     }, [authContext.user]);
+
+    useEffect(() => {
+        if (!rooms.length) {
+            return;
+        }
+
+        function handleOnlineEvent(roomId) {
+
+            const updatedRooms = rooms.map(room => {
+                if (room.id == roomId) {
+                    return {
+                        ...room,
+                        isOnline: true
+                    }
+                }
+
+                return room;
+            })
+            updateRooms({ _rooms: updatedRooms });
+        }
+
+        function handleOfflineEvent(userId) {
+
+            const updatedRooms = rooms.map(room => {
+                if (room.targetUserId == userId) {
+                    return {
+                        ...room,
+                        isOnline: false
+                    }
+                }
+
+                return room;
+            })
+            updateRooms({ _rooms: updatedRooms });
+        }
+
+        socket.on('online', handleOnlineEvent);
+        socket.on('offline', handleOfflineEvent);
+
+        return () => {
+            socket.off('online', handleOnlineEvent);
+            socket.off('offline', handleOfflineEvent);
+        }
+
+    }, [rooms]);
 
     return (
         <RoomContext.Provider value={{

@@ -25,7 +25,7 @@ function ResultUser({ user, set, setSelectedUsers, setResultSet, isUserSame }) {
       }}
       className="flex cursor-pointer items-center justify-between rounded-sm p-2"
     >
-      <div className="text-xs sm:text-sm">{user.userName}</div>
+      <div className="text-xs">{user.userName}</div>
       {set.has(user.id) && <span className="text-xs">selected</span>}
       {isUserSame && <span className="text-xs">You</span>}
     </div>

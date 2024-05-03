@@ -46,11 +46,10 @@ async function signup({ email, password, userName }) {
 
 async function getUser() {
     try {
-        const { data } = await instance.post("/auth/getUser");
+        const { data } = await instance.get("/auth/getUser");
         return data;
 
     } catch (err) {
-        console.log(err);
         return err.response?.data;
     }
 }
