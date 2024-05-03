@@ -5,25 +5,14 @@ import { ScrollArea } from "./ui/scroll-area";
 import { Telescope } from "lucide-react";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useChatContext } from "@/hooks/chatContext";
-
+import Pattern from "../assets/tten.svg";
 
 function ChatMessages({ chat, isChatLoading, messages }) {
   const authContext = useAuthContext();
   const chatContext = useChatContext();
   const userId = authContext.user.profile.id;
-  const [scrollPosition, setScrollPosition] = useState(0);
 
-  const topRef = useRef(null);
   const bottomRef = useRef(null);
-
-  const handler = useCallback((div) => {
-    if (!div) {
-      return;
-    }
-
-    div.scrollIntoView();
-
-  }, [chatContext.chat]);
 
   useEffect(() => {
     if (!bottomRef.current || messages.length == 0) {
@@ -40,7 +29,7 @@ function ChatMessages({ chat, isChatLoading, messages }) {
   return (
     <div className="relative overflow-y-auto flex flex-col bg-secondary border border-border shadow-sm rounded-md">
       <img
-        src="/src/assets/tten.svg"
+        src={Pattern}
         alt="pattern"
         className="absolute text-purple-500 left-0 top-0 h-full w-full object-cover opacity-[0.5]"
       />
