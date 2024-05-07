@@ -19,10 +19,10 @@ function ChatMessages({ chat, isChatLoading, messages }) {
       return;
     }
 
-    const lastMessage = messages[messages.length - 1];
-    if (lastMessage.userId == authContext.user.profile.id) {
-      bottomRef.current.scrollIntoView();
-    }
+    // const lastMessage = messages[messages.length - 1];
+    // if (lastMessage.userId == authContext.user.profile.id) {
+    bottomRef.current.scrollIntoView();
+    // }
 
   }, [messages]);
 

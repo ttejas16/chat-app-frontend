@@ -13,7 +13,7 @@ function App() {
                 <Routes>
                     <Route element={<PrivateWrapper />}>
                         <Route path="/" element={<Navigate to={"/chat/home"} replace={true} />} />
-                        <Route path="/chat/:id" element={<Home />} />
+                        <Route path="/chat/home" element={<Home />} />
                     </Route>
                     <Route path="/login" element={<AuthForm />} />
                     <Route path="*" element={<Error />} />

@@ -48,7 +48,7 @@ function Room({ room, currentChat, setChat, userId, updateRooms }) {
       >
         <div className="flex space-x-4 items-center">
           <Avatar className="size-8 lg:size-10 relative overflow-visible">
-            <AvatarImage src={room.avatar} className="rounded-full" />
+            <AvatarImage src={room.avatar} className="rounded-full object-cover" />
             <AvatarFallback className="bg-background/50 text-muted-foreground text-xs md:text-sm">
               {room.roomName?.split(" ").slice(0, 2).map((v) => v[0]).join("")}
             </AvatarFallback>

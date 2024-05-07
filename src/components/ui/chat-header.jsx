@@ -17,7 +17,7 @@ function ChatHeader({ chat, isOnline, setIsVisible }) {
                 </Button>
 
                 <Avatar className="size-8 lg:size-10">
-                    <AvatarImage src={chat.avatar} />
+                    <AvatarImage src={chat.avatar} className="object-cover" />
                     <AvatarFallback className="bg-background/50 text-muted-foreground text-xs md:text-sm">
                         <span>{chat.roomName?.split(" ").map((v) => v[0]).join("")}</span>
                     </AvatarFallback>

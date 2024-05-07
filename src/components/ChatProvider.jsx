@@ -199,7 +199,7 @@ function ChatProvider({ children }) {
       socket.disconnect();
     }
 
-  }, [authContext.user]);
+  }, [authContext.user.profile.id]);
 
   useEffect(() => {
     if (!authContext.user.isAuthenticated) {

@@ -53,8 +53,8 @@ function ProfileDropdown() {
 
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Avatar className="cursor-pointer w-11 h-11 relative overflow-visible text-foreground">
-                    <AvatarImage src={authContext.user.profile.avatar} className="rounded-full" />
+                <Avatar className="cursor-pointer relative overflow-visible text-foreground">
+                    <AvatarImage src={authContext.user.profile.avatar} className="rounded-full object-cover" />
                     <AvatarFallback>
                         {authContext.user.profile.userName?.split(" ").slice(0, 2).map((v) => v[0]).join("")}
                     </AvatarFallback>

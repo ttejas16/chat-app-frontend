@@ -74,12 +74,18 @@ module.exports = {
           from: { top: "0%" },
           to: { top: "100%" },
         },
+        "message-pop": {
+          "0%": { transform: "scale(0)" },
+          "50%": { transform: "scale(1.1)" },
+          "100%": { transform: "scale(1)" },
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "slideIn": "slide-in 0.2s ease-out forwards",
         "slideOut": "slide-out 0.25s ease-in-out forwards",
+        "messagePop": "message-pop 0.2s ease-out forwards"
       },
     },
   },
