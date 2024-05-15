@@ -1,7 +1,7 @@
 import React from "react";
 import { Check, X } from "lucide-react";
 
-function SelectedUser({ user, setSelectedUsers, set }) {
+function SelectedUser({ user, setSelectedUsers, setResultSet, set }) {
 
     return (
         <div
@@ -10,6 +10,9 @@ function SelectedUser({ user, setSelectedUsers, set }) {
                     return prev.filter((u) => {
                         return u.id != user.id
                     })
+                })
+                setResultSet((prev) => {
+                    return [user, ...prev];
                 })
                 set.delete(user.id);
             }}

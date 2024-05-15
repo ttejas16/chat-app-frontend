@@ -228,6 +228,7 @@ function SearchDialog({ children }) {
                       <SelectedUser
                         user={user}
                         setSelectedUsers={setSelectedUsers}
+                        setResultSet={setResultSet}
                         set={setReference.current}
                       />
                       <Separator className="bg-muted-foreground my-1" />
@@ -243,6 +244,7 @@ function SearchDialog({ children }) {
                         setSelectedUsers={setSelectedUsers}
                         setResultSet={setResultSet}
                         isUserSame={user.id == authContext.user.profile.id}
+                        roomType={roomType}
                       />
                       <Separator className="bg-muted-foreground mt-1" />
                     </div>

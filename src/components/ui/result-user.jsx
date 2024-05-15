@@ -1,7 +1,7 @@
 import React from "react";
 import { Check } from "lucide-react";
 
-function ResultUser({ user, set, setSelectedUsers, setResultSet, isUserSame }) {
+function ResultUser({ user, set, setSelectedUsers, setResultSet, isUserSame, roomType }) {
   return (
     <div
       onClick={() => {
@@ -10,9 +10,20 @@ function ResultUser({ user, set, setSelectedUsers, setResultSet, isUserSame }) {
         }
 
         if (!set.has(user.id)) {
-          setSelectedUsers((prev) => {
-            return [...prev, user];
-          });
+
+          if (roomType == 'group') {
+            setSelectedUsers((prev) => {
+              return [...prev, user];
+            });
+
+          } else {
+            set.clear();
+            setSelectedUsers(() => {
+              return [user];
+            });
+
+          }
+          set.add(user.id);
 
           setResultSet((prev) => {
             return prev.filter((u) => {
@@ -20,7 +31,6 @@ function ResultUser({ user, set, setSelectedUsers, setResultSet, isUserSame }) {
             });
           });
 
-          set.add(user.id);
         }
       }}
       className="flex cursor-pointer items-center justify-between rounded-sm p-2"
