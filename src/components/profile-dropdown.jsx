@@ -14,10 +14,12 @@ import Profile from "./Profile";
 
 import { useAuthContext } from "@/hooks/authContext";
 import { logout } from "@/api/auth/auth";
+import { useChatContext } from "@/hooks/chatContext";
 
 function ProfileDropdown() {
     const { toast } = useToast();
     const authContext = useAuthContext();
+    const chatContext = useChatContext();
 
     async function handleLogout() {
         authContext.setIsLoading(true);
@@ -44,6 +46,7 @@ function ProfileDropdown() {
         }
 
         authContext.logoutUser();
+        chatContext.resetChat();
         setTimeout(() => {
             authContext.setIsLoading(false);
         }, 500);

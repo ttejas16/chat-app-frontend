@@ -1,4 +1,4 @@
-import { useReducer, useState, useEffect } from "react";
+import { useReducer, useState, useEffect, useCallback } from "react";
 
 import { RoomContext } from "@/hooks/roomContext";
 import { useAuthContext } from "@/hooks/authContext";
@@ -34,6 +34,71 @@ function RoomProvider({ children }) {
     function updateRooms({ _rooms = rooms }) {
         roomsDispatch({ type: 'UPDATE_ROOMS', payload: _rooms });
     }
+
+    const notifyRooms = useCallback(({ msg }) => {
+        let result;
+
+        const notifiedRoom = rooms.find(room => msg.roomId == room.id);
+        if (!notifiedRoom) {
+            // create a new room
+            // add to exisiting rooms
+            const newRoom = {
+                id: msg.roomId,
+                roomName: msg.isGroup ? msg.roomName : msg.userName,
+                isGroup: msg.isGroup,
+                lastMessage: {
+                    content: msg.content,
+                    user: {
+                        id: msg.userId,
+                        userName: msg.userName
+                    }
+                },
+                hasNotification: true,
+                notifications: [{ content: msg.content, from: msg.userName }]
+            }
+            result = [...rooms, newRoom];
+        }
+        else {
+            // room already exists
+            // update the rooms and set whose notification was received
+            result = rooms.map((room) => {
+                if (room.id == msg.roomId) {
+                    room.lastMessage = {
+                        content: msg.content,
+                        user: {
+                            id: msg.userId,
+                            userName: msg.userName
+                        }
+                    };
+                    room.hasNotification = true;
+                    room.notifications.push({
+                        content: msg.content,
+                        from: msg.userName
+                    });
+
+                }
+                return room;
+            });
+        }
+
+        // sort by number of notifications
+        result.sort((a, b) => {
+            if (a.hasNotification && b.hasNotification) {
+                return b.notifications.length - a.notifications.length;
+            }
+
+            if (a.hasNotification) {
+                return -1;
+            }
+            else if (b.hasNotification) {
+                return 1;
+            }
+
+            return 0;
+        })
+
+        roomsDispatch({ type: 'UPDATE_ROOMS', payload: result });
+    }, [rooms]);
 
     function appendRoom({ room = {} }) {
 
@@ -164,6 +229,7 @@ function RoomProvider({ children }) {
             setRooms,
             appendRoom,
             updateRooms,
+            notifyRooms,
             filterGroups,
             toggleFilter
         }}>

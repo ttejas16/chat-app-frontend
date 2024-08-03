@@ -78,14 +78,24 @@ module.exports = {
           "0%": { transform: "scale(0)" },
           "50%": { transform: "scale(1.1)" },
           "100%": { transform: "scale(1)" },
-        }
+        },
+        "slide-up": {
+          from: { transform: "translateY(100%)" },
+          to: { transform: "translateY(0%)" },
+        },
+        "slide-down": {
+          from: { transform: "translateY(0%)" },
+          to: { transform: "translateY(105%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "slideIn": "slide-in 0.2s ease-out forwards",
         "slideOut": "slide-out 0.25s ease-in-out forwards",
-        "messagePop": "message-pop 0.2s ease-out forwards"
+        "messagePop": "message-pop 0.2s ease-out forwards",
+        "slideUp": "slide-up 0.1s ease-out",
+        "slideDown": "slide-down 0.1s ease-out forwards"
       },
     },
   },

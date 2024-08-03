@@ -12,6 +12,8 @@ import { ChatContext } from "@/hooks/chatContext";
 import { useAuthContext } from "@/hooks/authContext";
 import { useRoomContext } from "@/hooks/roomContext";
 
+const initialTyper = { isTyping: false, userName: null };
+
 function ChatProvider({ children }) {
   const authContext = useAuthContext();
   const roomContext = useRoomContext();
@@ -28,13 +30,14 @@ function ChatProvider({ children }) {
   const [isChatLoading, setIsChatLoading] = useState(true);
   const [isMoreChatLoading, setIsMoreChatLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(false);
+  const [typer, setTyper] = useState(initialTyper);
 
   function setChat({ chat = {} }) {
     chatDispatch({ type: "SET_CHAT", payload: chat });
   }
 
   function resetChat() {
-    chatDispatch({ type: "RESET_CHAT", payload: chat });
+    chatDispatch({ type: "RESET_CHAT", payload: initialChat });
   }
 
   function setMessages({ messages = [] }) {
@@ -97,16 +100,40 @@ function ChatProvider({ children }) {
     fetchMessages();
 
     socket.emit('join-room', chat.id);
+    socket.on('typing', (obj) => {
+      setTyper({
+        isTyping: obj.isTyping,
+        userName: obj.userName
+      });
+    });
     socket.on("message", (msg) => {
       addMessage({ message: msg });
+      // update last message for current room
+      const result = roomContext.rooms.map(room => {
+        if (room.id == msg.roomId) {
+          room.lastMessage = {
+            content: msg.content,
+            user: {
+              id: msg.userId,
+              userName: msg.userName
+            }
+          };
+        }
+
+        return room;
+      });
+
+      roomContext.updateRooms({ _rooms: result });
     });
 
     return () => {
       resetMessages({ messages: [] });
       setIsChatLoading(true);
       setIsOnline(false);
+      setTyper(initialTyper);
       // socket.removeListener("online");
       socket.removeListener("message");
+      socket.removeListener("typing");
       socket.emit('leave-room', chat.id);
     };
 
@@ -120,67 +147,69 @@ function ChatProvider({ children }) {
       return;
     }
 
-    let result;
-    const notifiedRoom = roomContext.rooms.find(room => msg.roomId == room.id);
+    // console.log("here");
+    roomContext.notifyRooms({ msg: msg });
+    // let result;
+    // const notifiedRoom = roomContext.rooms.find(room => msg.roomId == room.id);
 
-    if (!notifiedRoom) {
-      // create a new room
-      // add to exisiting rooms
-      const newRoom = {
-        id: msg.roomId,
-        roomName: msg.isGroup ? msg.roomName : msg.userName,
-        isGroup: msg.isGroup,
-        lastMessage: {
-          content: msg.content,
-          user: {
-            id: msg.userId,
-            userName: msg.userName
-          }
-        },
-        hasNotification: true,
-        notifications: [{ content: msg.content, from: msg.userName }]
-      }
-      result = [...roomContext.rooms, newRoom];
-    }
-    else {
-      // room already exists
-      // update the rooms and set whose notification was received
-      result = roomContext.rooms.map((room) => {
-        if (room.id == msg.roomId) {
-          room.lastMessage = {
-            content: msg.content,
-            user: {
-              id: msg.userId,
-              userName: msg.userName
-            }
-          };
-          room.hasNotification = true;
-          room.notifications.push({
-            content: msg.content,
-            from: msg.userName
-          });
+    // if (!notifiedRoom) {
+    //   // create a new room
+    //   // add to exisiting rooms
+    //   const newRoom = {
+    //     id: msg.roomId,
+    //     roomName: msg.isGroup ? msg.roomName : msg.userName,
+    //     isGroup: msg.isGroup,
+    //     lastMessage: {
+    //       content: msg.content,
+    //       user: {
+    //         id: msg.userId,
+    //         userName: msg.userName
+    //       }
+    //     },
+    //     hasNotification: true,
+    //     notifications: [{ content: msg.content, from: msg.userName }]
+    //   }
+    //   result = [...roomContext.rooms, newRoom];
+    // }
+    // else {
+    //   // room already exists
+    //   // update the rooms and set whose notification was received
+    //   result = roomContext.rooms.map((room) => {
+    //     if (room.id == msg.roomId) {
+    //       room.lastMessage = {
+    //         content: msg.content,
+    //         user: {
+    //           id: msg.userId,
+    //           userName: msg.userName
+    //         }
+    //       };
+    //       room.hasNotification = true;
+    //       room.notifications.push({
+    //         content: msg.content,
+    //         from: msg.userName
+    //       });
 
-        }
-        return room;
-      });
-    }
+    //     }
+    //     return room;
+    //   });
+    // }
 
-    result.sort((a, b) => {
-      if (a.hasNotification && b.hasNotification) {
-        return b.notifications.length - a.notifications.length;
-      }
+    // result.sort((a, b) => {
+    //   if (a.hasNotification && b.hasNotification) {
+    //     return b.notifications.length - a.notifications.length;
+    //   }
 
-      if (a.hasNotification) {
-        return -1;
-      }
-      else if (b.hasNotification) {
-        return 1;
-      }
+    //   if (a.hasNotification) {
+    //     return -1;
+    //   }
+    //   else if (b.hasNotification) {
+    //     return 1;
+    //   }
 
-      return 0;
-    })
+    //   return 0;
+    // })
 
-    roomContext.updateRooms({ _rooms: result });
+    // roomContext.updateRooms({ _rooms: result });
   }, [authContext.user, roomContext.rooms, chat]);
 
 
@@ -222,6 +251,7 @@ function ChatProvider({ children }) {
         setIsMoreChatLoading,
         isChatLoading,
         isOnline,
+        typer,
         chat,
         setChat,
         resetChat,

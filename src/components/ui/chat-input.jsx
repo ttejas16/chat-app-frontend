@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
 
 import { Button } from "./button";
@@ -14,6 +14,8 @@ function ChatInput() {
   const chatContext = useChatContext();
   const authContext = useAuthContext();
   const [inputMessage, setInputMessage] = useState("");
+  const [isThrottled, setIsThrottled] = useState(false);
+  const typingCancelTimeoutRef = useRef();
 
   function handleEmojiSelect(e) {
     setInputMessage(inputMessage + e.currentTarget.innerText);
@@ -33,9 +35,43 @@ function ChatInput() {
         isGroup: chatContext.chat.isGroup
       }
       socket.emit('message', message);
+      socket.emit('typing', { isTyping: false, userName: authContext.user.profile.userName });
     }
     setInputMessage("");
   }
+
+  useEffect(() => {
+
+    typingCancelTimeoutRef.current = setTimeout(() => {
+      socket.emit('typing', { isTyping: false, userName: authContext.user.profile.userName });
+    }, 1000);
+
+    return () => {
+      clearTimeout(typingCancelTimeoutRef.current);
+    }
+  }, [inputMessage]);
+
+  useEffect(() => {
+
+    if (!inputMessage) {
+      return;
+    }
+
+    if (!isThrottled) {
+      socket.emit('typing', { isTyping: true, userName: authContext.user.profile.userName });
+      setIsThrottled(true);
+      setTimeout(() => {
+        setIsThrottled(false);
+      }, 1500);
+    }
+
+  }, [inputMessage]);
+
+  useEffect(() => {
+    return () => {
+      socket.emit('typing', { isTyping: false, userName: authContext.user.profile.userName });
+    }
+  }, []);
 
 
   return (

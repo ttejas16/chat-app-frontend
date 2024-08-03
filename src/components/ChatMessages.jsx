@@ -6,6 +6,7 @@ import { Telescope } from "lucide-react";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useChatContext } from "@/hooks/chatContext";
 import Pattern from "../assets/tten.svg";
+import TypingBubble from "./ui/typing-bubble";
 
 function ChatMessages({ chat, isChatLoading, messages }) {
   const authContext = useAuthContext();
@@ -27,7 +28,7 @@ function ChatMessages({ chat, isChatLoading, messages }) {
   }, [messages]);
 
   return (
-    <div className="relative overflow-y-auto flex flex-col bg-secondary border border-border shadow-sm rounded-md">
+    <div className="relative overflow-y-hidden flex flex-col bg-secondary border border-border shadow-sm rounded-md">
       <img
         src={Pattern}
         alt="pattern"
@@ -62,6 +63,7 @@ function ChatMessages({ chat, isChatLoading, messages }) {
             </div>
             <div ref={bottomRef}></div>
           </ScrollArea>
+          {chatContext.typer.isTyping && <TypingBubble userName={chatContext.typer.userName} />}
         </>
       )}
     </div>

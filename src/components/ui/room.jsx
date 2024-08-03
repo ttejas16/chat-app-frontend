@@ -3,13 +3,13 @@ import { useRoomContext } from "@/hooks/roomContext";
 
 function Room({ room, currentChat, setChat, userId, updateRooms }) {
   const roomContext = useRoomContext();
-  let lastMessageFrom;
+  let lastMessageFrom = null;
 
-  if (room.isGroup && room.lastMessage) {
+  if (room.lastMessage) {
     if (room.lastMessage.user.id == userId) {
       lastMessageFrom = "You: ";
     }
-    else {
+    else if (room.isGroup) {
       lastMessageFrom = `~ ${room.lastMessage.user.userName}: `;
     }
   }
@@ -64,14 +64,14 @@ function Room({ room, currentChat, setChat, userId, updateRooms }) {
               {room.roomName}
             </span>
             <span className="text-[0.65rem] md:text-xs text-muted-foreground line-clamp-1">
-              {room.isGroup ? lastMessageFrom : null}
+              {lastMessageFrom}
               {room.lastMessage ? room.lastMessage.content : null}
             </span>
           </div>
         </div>
         {
           room.hasNotification &&
-          <div className=" justify-self-end shrink-0 border bg-green-500 border-none text-background text-[0.65rem] size-5 flex justify-center items-center rounded-full">
+          <div className=" justify-self-end shrink-0 border bg-green-500 border-none text-background text-[0.65rem] size-5 flex justify-center items-center text-center rounded-full">
             {room.notifications.length}
           </div>
         }
