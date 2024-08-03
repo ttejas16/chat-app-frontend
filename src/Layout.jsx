@@ -1,7 +1,7 @@
-import AuthProvider from "@/components/AuthProvider";
+import AuthProvider from "@/providers/AuthProvider";
 import ChatProvider from "@/components/ChatProvider";
 import RoomProvider from "@/components/RoomProvider";
-import DialogProvider from "@/components/DialogProvider";
+import DialogProvider from "@/providers/DialogProvider";
 import { Toaster } from "@/components/ui/toaster";
 
 function Layout({ children }) {
