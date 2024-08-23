@@ -7,7 +7,7 @@ import { initialRooms, roomReducer } from "@/store/roomReducer";
 
 import { getRooms } from "@/api/chat/room";
 import { socket } from "@/api/socketConfig";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 function RoomProvider({ children }) {
     const { toast } = useToast();
