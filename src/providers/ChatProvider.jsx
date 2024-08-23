@@ -147,69 +147,8 @@ function ChatProvider({ children }) {
       return;
     }
 
-    // console.log("here");
     roomContext.notifyRooms({ msg: msg });
-    // let result;
-    // const notifiedRoom = roomContext.rooms.find(room => msg.roomId == room.id);
 
-    // if (!notifiedRoom) {
-    //   // create a new room
-    //   // add to exisiting rooms
-    //   const newRoom = {
-    //     id: msg.roomId,
-    //     roomName: msg.isGroup ? msg.roomName : msg.userName,
-    //     isGroup: msg.isGroup,
-    //     lastMessage: {
-    //       content: msg.content,
-    //       user: {
-    //         id: msg.userId,
-    //         userName: msg.userName
-    //       }
-    //     },
-    //     hasNotification: true,
-    //     notifications: [{ content: msg.content, from: msg.userName }]
-    //   }
-    //   result = [...roomContext.rooms, newRoom];
-    // }
-    // else {
-    //   // room already exists
-    //   // update the rooms and set whose notification was received
-    //   result = roomContext.rooms.map((room) => {
-    //     if (room.id == msg.roomId) {
-    //       room.lastMessage = {
-    //         content: msg.content,
-    //         user: {
-    //           id: msg.userId,
-    //           userName: msg.userName
-    //         }
-    //       };
-    //       room.hasNotification = true;
-    //       room.notifications.push({
-    //         content: msg.content,
-    //         from: msg.userName
-    //       });
-
-    //     }
-    //     return room;
-    //   });
-    // }
-
-    // result.sort((a, b) => {
-    //   if (a.hasNotification && b.hasNotification) {
-    //     return b.notifications.length - a.notifications.length;
-    //   }
-
-    //   if (a.hasNotification) {
-    //     return -1;
-    //   }
-    //   else if (b.hasNotification) {
-    //     return 1;
-    //   }
-
-    //   return 0;
-    // })
-
-    // roomContext.updateRooms({ _rooms: result });
   }, [authContext.user, roomContext.rooms, chat]);
 
 
@@ -258,7 +197,8 @@ function ChatProvider({ children }) {
         messages,
         setMessages,
         addMessage,
-        fetchMoreMessages
+        fetchMoreMessages,
+        appendMessages
       }}
     >
       {children}

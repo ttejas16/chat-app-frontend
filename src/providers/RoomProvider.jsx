@@ -46,6 +46,8 @@ function RoomProvider({ children }) {
                 id: msg.roomId,
                 roomName: msg.isGroup ? msg.roomName : msg.userName,
                 isGroup: msg.isGroup,
+                isOnline: !msg.isGroup ? true : false,
+                targetUserId: !msg.isGroup ? msg.userId : null,
                 lastMessage: {
                     content: msg.content,
                     user: {
@@ -208,6 +210,7 @@ function RoomProvider({ children }) {
 
                 return room;
             })
+            // console.log(updatedRooms);
             updateRooms({ _rooms: updatedRooms });
         }
 

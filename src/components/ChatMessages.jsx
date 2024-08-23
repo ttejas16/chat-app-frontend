@@ -13,19 +13,15 @@ function ChatMessages({ chat, isChatLoading, messages }) {
   const chatContext = useChatContext();
   const userId = authContext.user.profile.id;
 
-  const bottomRef = useRef(null);
+  const bottomDivisionRef = useRef();
+  const firstMessageRef = useRef();
+  const containerRef = useRef();
 
   useEffect(() => {
-    if (!bottomRef.current || messages.length == 0) {
-      return;
+    if (bottomDivisionRef.current) {
+      bottomDivisionRef.current.scrollIntoView();
     }
-
-    // const lastMessage = messages[messages.length - 1];
-    // if (lastMessage.userId == authContext.user.profile.id) {
-    bottomRef.current.scrollIntoView();
-    // }
-
-  }, [messages]);
+  }, [isChatLoading])
 
   return (
     <div className="relative overflow-y-hidden flex flex-col bg-secondary border border-border shadow-sm rounded-md">
@@ -41,7 +37,8 @@ function ChatMessages({ chat, isChatLoading, messages }) {
       ) : (
         <>
           <ScrollArea className="w-full h-full">
-            <div className="w-full h-full flex flex-col items-start py-4 gap-y-2 px-3 sm:px-6">
+            <div ref={containerRef} className="w-full h-full flex flex-col items-start py-4 gap-y-2 px-3 sm:px-6">
+              <div ref={null}></div>
               {!isChatLoading && messages.length == 0 &&
                 <div className="flex flex-col items-center self-center relative 
               text-center text-foreground text-xs sm:text-sm lg:text-base space-y-2">
@@ -52,7 +49,7 @@ function ChatMessages({ chat, isChatLoading, messages }) {
               {messages.map((message, index) => {
                 return (
                   <Message
-                    ref={null}
+                    ref={index == 0 ? firstMessageRef : null}
                     key={index}
                     userName={message.userName}
                     message={message.content}
@@ -61,7 +58,13 @@ function ChatMessages({ chat, isChatLoading, messages }) {
                 )
               })}
             </div>
-            <div ref={bottomRef}></div>
+            <div ref={(r) => {
+              if (!r) {
+                return;
+              }
+
+              r.scrollIntoView();
+            }}></div>
           </ScrollArea>
           {chatContext.typer.isTyping && <TypingBubble userName={chatContext.typer.userName} />}
         </>
