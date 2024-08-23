@@ -21,7 +21,9 @@ function ChatMessages({ chat, isChatLoading, messages }) {
     if (bottomDivisionRef.current) {
       bottomDivisionRef.current.scrollIntoView();
     }
-  }, [isChatLoading])
+  }, [isChatLoading, messages])
+
+
 
   return (
     <div className="relative overflow-y-hidden flex flex-col bg-secondary border border-border shadow-sm rounded-md">
@@ -36,9 +38,8 @@ function ChatMessages({ chat, isChatLoading, messages }) {
         </div>
       ) : (
         <>
-          <ScrollArea className="w-full h-full">
-            <div ref={containerRef} className="w-full h-full flex flex-col items-start py-4 gap-y-2 px-3 sm:px-6">
-              <div ref={null}></div>
+          <ScrollArea ref={containerRef} className="w-full h-full">
+            <div ref={null} className="relative w-full h-full flex flex-col items-start py-4 gap-y-2 px-3 sm:px-6">
               {!isChatLoading && messages.length == 0 &&
                 <div className="flex flex-col items-center self-center relative 
               text-center text-foreground text-xs sm:text-sm lg:text-base space-y-2">
@@ -58,13 +59,8 @@ function ChatMessages({ chat, isChatLoading, messages }) {
                 )
               })}
             </div>
-            <div ref={(r) => {
-              if (!r) {
-                return;
-              }
 
-              r.scrollIntoView();
-            }}></div>
+            <div ref={bottomDivisionRef}></div>
           </ScrollArea>
           {chatContext.typer.isTyping && <TypingBubble userName={chatContext.typer.userName} />}
         </>
