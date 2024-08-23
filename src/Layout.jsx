@@ -1,6 +1,6 @@
 import AuthProvider from "@/providers/AuthProvider";
-import ChatProvider from "@/components/ChatProvider";
-import RoomProvider from "@/components/RoomProvider";
+import ChatProvider from "@/providers/ChatProvider";
+import RoomProvider from "@/providers/RoomProvider";
 import DialogProvider from "@/providers/DialogProvider";
 import { Toaster } from "@/components/ui/toaster";
 
