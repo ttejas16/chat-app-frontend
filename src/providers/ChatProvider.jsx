@@ -4,7 +4,7 @@ import { useState, useEffect, useReducer, useCallback } from "react";
 import { initialChat, chatReducer } from "@/store/chatReducer";
 import { initialMessages, messagesReducer } from "@/store/messagesReducer";
 
-import { useToast } from "./ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 import { socket } from "@/api/socketConfig";
 import { getMessages } from "@/api/chat/message";
